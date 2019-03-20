@@ -44,6 +44,7 @@ service.interceptors.request.use(
     const token = util.cookies.get('token')
     // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
     config.headers['X-Token'] = token
+    config.headers['Content-type'] = 'application/json'
     return config
   },
   error => {
@@ -95,6 +96,7 @@ service.interceptors.response.use(
         case 503: error.message = '服务不可用'; break
         case 504: error.message = '网关超时'; break
         case 505: error.message = 'HTTP版本不受支持'; break
+        case 603: error.message = '用户名或密码错误'; break
         default: break
       }
     }

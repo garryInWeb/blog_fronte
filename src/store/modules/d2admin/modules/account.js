@@ -14,14 +14,14 @@ export default {
      * @param {Object} param route {Object} 登录成功后定向的路由对象 任何 vue-router 支持的格式
      */
     login ({ dispatch }, {
-      username = '',
-      password = ''
+      userName = '',
+      userPwd = ''
     } = {}) {
       return new Promise((resolve, reject) => {
         // 开始请求登录接口
         AccountLogin({
-          username,
-          password
+          userName,
+          userPwd
         })
           .then(async res => {
             // 设置 cookie 一定要存 uuid 和 token 两个 cookie
@@ -33,7 +33,7 @@ export default {
             util.cookies.set('token', res.token)
             // 设置 vuex 用户信息
             await dispatch('d2admin/user/set', {
-              name: res.name
+              name: res
             }, { root: true })
             // 用户登录后从持久化数据加载一系列的设置
             await dispatch('load')

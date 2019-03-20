@@ -14,7 +14,17 @@ module.exports = {
   publicPath, // 根据你的实际情况更改这里
   lintOnSave: true,
   devServer: {
-    publicPath // 和 publicPath 保持一致
+    // publicPath // 和 publicPath 保持一致
+    proxy: {
+      '/api': {
+        target: 'http://t.vania.org:8787/user',
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    }
   },
   css: {
     loaderOptions: {
@@ -72,7 +82,7 @@ module.exports = {
     // i18n
     config.module
       .rule('i18n')
-      .resourceQuery(/blockType=i18n/)
+      .resourceQuery(/blockTypedevServer=i18n/)
       .use('i18n')
       .loader('@kazupon/vue-i18n-loader')
       .end()
@@ -104,11 +114,11 @@ module.exports = {
       .set('__dirname', true)
       .set('__filename', true)
     // 判断环境加入模拟数据
-    const entry = config.entry('app')
-    if (process.env.VUE_APP_BUILD_MODE !== 'nomock') {
-      entry
-        .add('@/mock')
-        .end()
-    }
+    // const entry = config.entry('app')
+    // if (process.env.VUE_APP_BUILD_MODE !== 'nomock') {
+    //   entry
+    //     .add('@/mock')
+    //     .end()
+    // }
   }
 }
