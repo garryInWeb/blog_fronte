@@ -101,9 +101,7 @@ export default {
       })
     },
     addRow () {
-      this.$refs.d2Crud.showDialog({
-        mode: 'add'
-      })
+      this.$router.push({ path: '/demo/components/editor-simpleMDE' })
     },
     addRowWithNewTemplate () {
       this.$refs.d2Crud.showDialog({
