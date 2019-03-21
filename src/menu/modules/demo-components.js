@@ -56,8 +56,6 @@ export default {
       title: '编辑器',
       icon: 'pencil-square-o',
       children: [
-        { path: `${pre}editor-ueditor`, title: 'UEditor', icon: '' },
-        { path: `${pre}editor-quill`, title: 'Quill', icon: '' },
         { path: `${pre}editor-simpleMDE`, title: 'simpleMDE', icon: '' }
       ]
     },
