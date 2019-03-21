@@ -16,8 +16,8 @@ module.exports = {
   devServer: {
     // publicPath // 和 publicPath 保持一致
     proxy: {
-      '/api': {
-        target: 'http://t.vania.org:8787/user',
+      '/api/': {
+        target: 'http://t.vania.org:8787',
         ws: true,
         changeOrigin: true,
         pathRewrite: {

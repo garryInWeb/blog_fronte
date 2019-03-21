@@ -21,47 +21,59 @@
         <el-switch v-model="original">
         </el-switch>
       </el-form-item>
-      <el-form-item label="阅读量:" label-width="80px">
-        <span style="color: #E6A23C;">{{count}}</span>
-      </el-form-item>
-      <el-form-item label="最后更新时间:" label-width="100px" style="float:right">
-        <span>{{updateTime}}</span>
-      </el-form-item>
+      <div v-if="update">
+        <el-form-item label="阅读量:" label-width="80px">
+          <span style="color: #E6A23C;">{{count}}</span>
+        </el-form-item>
+        <el-form-item label="最后更新时间:" label-width="100px" style="float:right">
+          <span>{{updateTime}}</span>
+        </el-form-item>
+      </div>
     </el-form>
     <d2-mde v-model="text" class="mde"/>
+    <el-form ref="form">
+        <el-form-item style="float:right">
+            <el-button type="primary" >立即创建</el-button>
+        </el-form-item>
+    </el-form>
   </d2-container>
 </template>
 
 <script>
 import text from './text'
+import request from '@/plugin/axios'
+
 export default {
   data () {
     return {
       filename: __filename,
       input: '',
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
+      options: [],
       value: '',
       text,
       original: false,
       count: 110,
-      updateTime: '2019'
+      updateTime: '2019',
+      update: false
     }
+  },
+  created () {
+    let _this = this
+    // 初始化分类
+    request({
+      url: '/articleType/all',
+      method: 'post'
+    }).then(async res => {
+      res.forEach(v => {
+        let item = {
+          value: v.id,
+          label: v.typeName
+        }
+        _this.options.push(item)
+      })
+    })
   }
+
 }
 </script>
 
