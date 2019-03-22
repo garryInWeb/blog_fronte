@@ -68,8 +68,8 @@ export default {
       rowHandle: {
         custom: [
           {
-            text: '自定义按钮',
-            type: 'warning',
+            text: '编辑',
+            type: 'info',
             size: 'small',
             emit: 'custom-emit-1'
           }

@@ -7,28 +7,22 @@
       :data="data"
       add-title="我的新增"
       :add-template="addTemplate"
+      :edit-template="editTemplate"
       :form-options="formOptions"
+      :rowHandle="rowHandle"
       @dialog-open="handleDialogOpen"
       @row-add="handleRowAdd"
+      @row-edit="handleRowEdit"
       @dialog-cancel="handleDialogCancel">
       <el-button slot="header" style="margin-bottom: 5px" @click="addRow">新增</el-button>
-      <el-button slot="header" style="margin-bottom: 5px" @click="addRowWithNewTemplate">使用自定义模板新增</el-button>
     </d2-crud>
-    <el-card shadow="never" class="d2-mb">
-      <d2-markdown :source="doc"/>
-    </el-card>
-    <el-card shadow="never" class="d2-mb">
-      <d2-highlight :code="code"/>
-    </el-card>
-    <template slot="footer">
-      <d2-link-btn title="文档" link="https://doc.d2admin.fairyever.com/zh/ecosystem-d2-crud/"/>
-    </template>
   </d2-container>
 </template>
 
 <script>
 import doc from './doc.md'
 import code from './code.js'
+import request from '@/plugin/axios'
 
 export default {
   data () {
@@ -38,52 +32,50 @@ export default {
       code,
       columns: [
         {
-          title: '日期',
-          key: 'date'
+          title: 'ID',
+          key: 'id'
         },
         {
           title: '姓名',
-          key: 'name'
+          key: 'typeName'
         },
         {
-          title: '地址',
-          key: 'address'
+          title: '最后更新时间',
+          key: 'updateTime'
+        },
+        {
+          title: '概述',
+          key: 'articleTypeInfo'
         }
       ],
-      data: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
+      data: [],
+      rowHandle: {
+        columnHeader: '编辑表格',
+        edit: {
+          icon: 'el-icon-edit',
+          text: '点我进行编辑',
+          size: 'small'
         },
-        {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        },
-        {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
-        },
-        {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
+        show (index, row) {
+          return true
         }
-      ],
+      },
       addTemplate: {
-        date: {
-          title: '日期',
-          value: '2016-05-05'
+        typeName: {
+          title: '姓名'
         },
-        name: {
+        articleTypeInfo: {
+          title: '概述'
+        }
+      },
+      editTemplate: {
+        typeName: {
           title: '姓名',
-          value: '王小虎'
+          value: ''
         },
-        address: {
-          title: '地址',
-          value: '上海市普陀区金沙江路 1520 弄'
+        articleTypeInfo: {
+          title: '概述',
+          value: ''
         }
       },
       formOptions: {
@@ -93,6 +85,24 @@ export default {
       }
     }
   },
+  created () {
+    let _this = this
+    // 初始化分类
+    request({
+      url: '/articleType/all',
+      method: 'post'
+    }).then(async res => {
+      res.forEach(v => {
+        let item = {
+          id: v.id,
+          typeName: v.typeName,
+          updateTime: v.updateTime,
+          articleTypeInfo: v.articleTypeInfo
+        }
+        _this.data.push(item)
+      })
+    })
+  },
   methods: {
     handleDialogOpen ({ mode }) {
       this.$message({
@@ -101,34 +111,42 @@ export default {
       })
     },
     addRow () {
-      this.$router.push({ path: '/demo/components/editor-simpleMDE' })
-    },
-    addRowWithNewTemplate () {
+      // this.$router.push({ path: '/demo/components/editor-simpleMDE' })
       this.$refs.d2Crud.showDialog({
-        mode: 'add',
-        template: {
-          name: {
-            title: '姓名',
-            value: ''
-          },
-          value1: {
-            title: '新属性1',
-            value: ''
-          },
-          value2: {
-            title: '新属性2',
-            value: ''
-          }
-        }
+        mode: 'add'
       })
+    },
+    handleRowEdit ({ index, row }, done) {
+      this.formOptions.saveLoading = true
+      setTimeout(() => {
+        request({
+          url: '/articleType/save',
+          method: 'post',
+          data: row
+        }).then(async res => {
+          this.$message({
+            message: '编辑成功',
+            type: 'success'
+          })
+        })
+        done({
+          address: '我是通过done事件传入的数据！'
+        })
+        this.formOptions.saveLoading = false
+      }, 300)
     },
     handleRowAdd (row, done) {
       this.formOptions.saveLoading = true
       setTimeout(() => {
-        console.log(row)
-        this.$message({
-          message: '保存成功',
-          type: 'success'
+        request({
+          url: '/articleType/save',
+          method: 'post',
+          data: row
+        }).then(async res => {
+          this.$message({
+            message: '保存成功',
+            type: 'success'
+          })
         })
         done({
           address: '我是通过done事件传入的数据！'
